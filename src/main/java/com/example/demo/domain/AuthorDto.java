@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class AuthorDto {
 
     private String name;
-    private LocalDate birthday;
+    private String birthday;
 
     public String getName() {
         return name;
@@ -15,11 +15,11 @@ public class AuthorDto {
         this.name = name;
     }
 
-    public LocalDate getBirthday() {
+    public String getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(LocalDate birthday) {
+    public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 }

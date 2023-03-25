@@ -1,13 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.domain.Book;
-import com.example.demo.domain.BookDto;
+import com.example.demo.domain.*;
+import com.example.demo.repository.AuthorRepository;
 import com.example.demo.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BookstoreServiceImpl implements BookstoreService {
@@ -15,20 +19,32 @@ public class BookstoreServiceImpl implements BookstoreService {
     @Autowired
     BookRepository bookRepository;
 
-//    public BookstoreServiceImpl(
-//        BookRepository bookRepository
-//    ){
-//        this.bookRepository = bookRepository;
-//    }
+    @Autowired
+    AuthorRepository authorRepository;
 
     @Override
     public String saveBook(BookDto bookDto) {
         Book newBook = new Book();
         newBook.setIsbn(bookDto.getIsbn());
-//        newBook.setGenre(bookDto.getGenre());
-//        newBook.setPrice(bookDto.getPrice());
-//        newBook.setTitle(bookDto.getTitle());
-//        newBook.setPrice(bookDto.getPrice());
+        newBook.setBookGenre(bookDto.getBookGenre());
+        newBook.setBookPrice(bookDto.getBookPrice());
+        newBook.setBookTitle(bookDto.getBookTitle());
+        newBook.setBookPrice(bookDto.getBookPrice());
+
+        List<Author> authorList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        bookDto.getAuthors()
+                .forEach(author -> {
+                    Author auth = new Author();
+                    auth.setName(author.getName());
+                    auth.setBirthday(LocalDate.parse(author.getBirthday(), formatter));
+                    authorList.add(auth);
+                });
+
+        List<Author> authors = authorRepository.saveAll(authorList);
+        String authorLst = authors.stream().map(i -> Long.toString(i.getId())).collect(Collectors.joining(","));
+        newBook.setAuthorIds(authorLst);
         newBook = bookRepository.save(newBook);
         return newBook.getIsbn();
     }
@@ -37,10 +53,9 @@ public class BookstoreServiceImpl implements BookstoreService {
         Book bk = new Book();
 
         if (bk != null) {
-//            bk.setGenre(bookDto.getGenre());
-//            bk.setPrice(bookDto.getPrice());
-//            bk.setTitle(bookDto.getTitle());
-//            bk.setPrice(bookDto.getPrice());
+            bk.setBookGenre(bookDto.getBookGenre());
+            bk.setBookPrice(bookDto.getBookPrice());
+            bk.setBookTitle(bookDto.getBookTitle());
             bk = bookRepository.save(bk);
             return bk;
         }

@@ -1,14 +1,15 @@
 package com.example.demo.domain;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BookDto {
     private String isbn;
-    private String title;
-    private List<Author> authors;
-    private Integer year;
-    private Double price;
-    private String genre;
+    private String bookTitle;
+    private List<AuthorDto> authors;
+    private Integer yearOfPublish;
+    private Double bookPrice;
+    private String bookGenre;
 
     public String getIsbn() {
         return isbn;
@@ -18,43 +19,56 @@ public class BookDto {
         this.isbn = isbn;
     }
 
-    public String getTitle() {
-        return title;
+    public String getBookTitle() {
+        return bookTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
     }
 
-    public List<Author> getAuthors() {
+    public List<AuthorDto> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(List<Author> authors) {
+    public void setAuthors(List<AuthorDto> authors) {
         this.authors = authors;
     }
 
-    public Integer getYear() {
-        return year;
+    public Integer getYearOfPublish() {
+        return yearOfPublish;
     }
 
-    public void setYear(Integer year) {
-        this.year = year;
+    public void setYearOfPublish(Integer yearOfPublish) {
+        this.yearOfPublish = yearOfPublish;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getBookPrice() {
+        return bookPrice;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setBookPrice(Double bookPrice) {
+        this.bookPrice = bookPrice;
     }
 
-    public String getGenre() {
-        return genre;
+    public String getBookGenre() {
+        return bookGenre;
     }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
+    public void setBookGenre(String bookGenre) {
+        this.bookGenre = bookGenre;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookDto bookDto = (BookDto) o;
+        return Objects.equals(isbn, bookDto.isbn) && Objects.equals(bookTitle, bookDto.bookTitle) && Objects.equals(authors, bookDto.authors) && Objects.equals(yearOfPublish, bookDto.yearOfPublish) && Objects.equals(bookPrice, bookDto.bookPrice) && Objects.equals(bookGenre, bookDto.bookGenre);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isbn, bookTitle, authors, yearOfPublish, bookPrice, bookGenre);
     }
 }

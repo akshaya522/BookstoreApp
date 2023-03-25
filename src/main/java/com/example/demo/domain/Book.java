@@ -17,8 +17,78 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Book {
+
     @Id
-    @GeneratedValue
     private String isbn;
 
+    private String bookTitle;
+
+    private Integer yearOfPublish;
+
+    private Double bookPrice;
+
+    private String bookGenre;
+
+    private String authorIds;
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
+    public Integer getYearOfPublish() {
+        return yearOfPublish;
+    }
+
+    public void setYearOfPublish(Integer yearOfPublish) {
+        this.yearOfPublish = yearOfPublish;
+    }
+
+    public Double getBookPrice() {
+        return bookPrice;
+    }
+
+    public void setBookPrice(Double bookPrice) {
+        this.bookPrice = bookPrice;
+    }
+
+    public String getBookGenre() {
+        return bookGenre;
+    }
+
+    public void setBookGenre(String bookGenre) {
+        this.bookGenre = bookGenre;
+    }
+
+    public String getAuthorIds() {
+        return authorIds;
+    }
+
+    public void setAuthorIds(String authorIds) {
+        this.authorIds = authorIds;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return Objects.equals(isbn, book.isbn) && Objects.equals(bookTitle, book.bookTitle) && Objects.equals(yearOfPublish, book.yearOfPublish) && Objects.equals(bookPrice, book.bookPrice) && Objects.equals(bookGenre, book.bookGenre);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isbn, bookTitle, yearOfPublish, bookPrice, bookGenre);
+    }
 }
