@@ -3,7 +3,6 @@ package com.example.demo.domain;
 import java.util.List;
 
 public class BookDto {
-
     private String isbn;
     private String title;
     private List<Author> authors;

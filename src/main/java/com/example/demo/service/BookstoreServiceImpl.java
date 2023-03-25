@@ -1,51 +1,60 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Book;
+import com.example.demo.domain.BookDto;
 import com.example.demo.repository.BookRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 
+@Service
 public class BookstoreServiceImpl implements BookstoreService {
 
-    private final BookRepository bookRepository;
+    @Autowired
+    BookRepository bookRepository;
 
-    public BookstoreServiceImpl (
-            BookRepository bookRepository
-    ){
-        this.bookRepository = bookRepository;
-    }
+//    public BookstoreServiceImpl(
+//        BookRepository bookRepository
+//    ){
+//        this.bookRepository = bookRepository;
+//    }
 
-    public String saveBook(Book book){
+    @Override
+    public String saveBook(BookDto bookDto) {
         Book newBook = new Book();
-        newBook.setIsbn(book.getIsbn());
-        newBook.setAuthors(book.getAuthors());
-        newBook.setGenre(book.getGenre());
-        newBook.setPrice(book.getPrice());
-        newBook.setTitle(book.getTitle());
-        newBook.setPrice(book.getPrice());
-        newBook = bookRepository.saveAndFlush(newBook);
+        newBook.setIsbn(bookDto.getIsbn());
+//        newBook.setGenre(bookDto.getGenre());
+//        newBook.setPrice(bookDto.getPrice());
+//        newBook.setTitle(bookDto.getTitle());
+//        newBook.setPrice(bookDto.getPrice());
+        newBook = bookRepository.save(newBook);
         return newBook.getIsbn();
     }
-
-    public Book updateBook(Book book) {
-        Book bk = this.bookRepository.findByIsbn(book.getIsbn()).orElse(null);
+    @Override
+    public Book updateBook(BookDto bookDto) {
+        Book bk = new Book();
 
         if (bk != null) {
-            bk.setAuthors(book.getAuthors());
-            bk.setGenre(book.getGenre());
-            bk.setPrice(book.getPrice());
-            bk.setTitle(book.getTitle());
-            bk.setPrice(book.getPrice());
-            bk = bookRepository.saveAndFlush(bk);
+//            bk.setGenre(bookDto.getGenre());
+//            bk.setPrice(bookDto.getPrice());
+//            bk.setTitle(bookDto.getTitle());
+//            bk.setPrice(bookDto.getPrice());
+            bk = bookRepository.save(bk);
             return bk;
         }
-        return book;
+        return bk;
     }
 
-    public void deleteBook(String isbn) {
-        Book bk = this.bookRepository.findByIsbn(isbn).orElse(null);
+    @Override
+    public String deleteBook(String isbn) {
+        Book bk = new Book();
         if (bk != null) {
-            this.bookRepository.deleteAllByIdInBatch(Arrays.asList(bk.getIsbn()));
+            bookRepository.delete(bk);
+            return "Book deleted successfully!";
+        } else {
+            return "Book with this isbn does not exist!";
         }
     }
 }
