@@ -29,7 +29,7 @@ public class BookstoreController {
         this.bookstoreService = bookstoreService;
     }
 
-    @PostMapping("/")
+    @GetMapping("")
     public String test(){
         return "Bookstore Application";
     }
