@@ -15,6 +15,7 @@ import javax.management.BadAttributeValueExpException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/books")
 public class BookstoreController {
     private final Logger log = LoggerFactory.getLogger(BookstoreController.class);
 
@@ -27,11 +28,6 @@ public class BookstoreController {
         BookstoreService bookstoreService
     ){
         this.bookstoreService = bookstoreService;
-    }
-
-    @GetMapping("")
-    public String test(){
-        return "Bookstore Application";
     }
 
     @PostMapping("/saveBook")
