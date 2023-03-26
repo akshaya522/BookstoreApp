@@ -19,7 +19,7 @@ public class Author {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
+    private String fullName;
     private LocalDate birthday;
 
     public Long getId() {
@@ -30,12 +30,12 @@ public class Author {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public LocalDate getBirthday() {
@@ -51,11 +51,11 @@ public class Author {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Author author = (Author) o;
-        return Objects.equals(id, author.id) && Objects.equals(name, author.name) && Objects.equals(birthday, author.birthday);
+        return Objects.equals(id, author.id) && Objects.equals(fullName, author.fullName) && Objects.equals(birthday, author.birthday);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, birthday);
+        return Objects.hash(id, fullName, birthday);
     }
 }

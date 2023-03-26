@@ -29,8 +29,6 @@ public class Book {
 
     private String bookGenre;
 
-    private String authorIds;
-
     public String getIsbn() {
         return isbn;
     }
@@ -69,14 +67,6 @@ public class Book {
 
     public void setBookGenre(String bookGenre) {
         this.bookGenre = bookGenre;
-    }
-
-    public String getAuthorIds() {
-        return authorIds;
-    }
-
-    public void setAuthorIds(String authorIds) {
-        this.authorIds = authorIds;
     }
 
     @Override
