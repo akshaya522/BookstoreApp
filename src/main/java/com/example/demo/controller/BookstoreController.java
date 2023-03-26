@@ -9,6 +9,7 @@ import com.example.demo.service.BookstoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.BadAttributeValueExpException;
@@ -19,13 +20,10 @@ import java.util.List;
 public class BookstoreController {
     private final Logger log = LoggerFactory.getLogger(BookstoreController.class);
 
-    @Autowired
-    private BookRepository bookRepository;
-
     private final BookstoreService bookstoreService;
 
     public BookstoreController(
-        BookstoreService bookstoreService
+            BookstoreService bookstoreService
     ){
         this.bookstoreService = bookstoreService;
     }
@@ -53,11 +51,6 @@ public class BookstoreController {
     @GetMapping("/getBookAuthors/{id}")
     public List<BookAuthor> getBookAuthors(@PathVariable String id) throws BadRequestAlertException {
         return this.bookstoreService.getBookAuthors(id);
-    }
-
-    @DeleteMapping("/deleteBook")
-    public String deleteBook(@RequestParam String isbn){
-        return this.bookstoreService.deleteBook(isbn);
     }
 
     @GetMapping("/searchBook")

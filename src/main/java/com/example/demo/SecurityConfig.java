@@ -2,6 +2,7 @@ package com.example.demo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
@@ -18,7 +19,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class SecurityConfig {
 
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/books/deleteBook")
+            new AntPathRequestMatcher("/test/**")
     );
 
     private static final RequestMatcher UNPROTECTED_URLS = new OrRequestMatcher(
@@ -30,8 +31,8 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers(PROTECTED_URLS).hasRole("MANAGER")
-                .requestMatchers(UNPROTECTED_URLS).hasAnyRole("USER", "MANAGER")
+                .requestMatchers(UNPROTECTED_URLS).hasRole("USER")
+                .requestMatchers(PROTECTED_URLS).hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic()
@@ -55,7 +56,7 @@ public class SecurityConfig {
         UserDetails theAdmin = User.withUsername("admin")
                 .passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder()::encode)
                 .password("pass1234")
-                .roles("ADMIN")
+                .roles("ADMIN", "USER")
                 .build();
 
         UserDetails theNone = User.withUsername("none")

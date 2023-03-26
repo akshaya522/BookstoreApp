@@ -1,18 +1,29 @@
 package com.example.demo.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.service.BookstoreService;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/test")
 public class HelloController {
+
+    private final BookstoreService bookstoreService;
+
+    public HelloController(
+            BookstoreService bookstoreService
+    ){
+        this.bookstoreService = bookstoreService;
+    }
+
 
     @GetMapping("")
     public String test(){
         return "Bookstore Application";
     }
 
-    @GetMapping("/error")
-    public String error(){
-        return "Error!";
+    @DeleteMapping("/deleteBook")
+    public String deleteBook(@RequestParam String isbn){
+        return this.bookstoreService.deleteBook(isbn);
     }
 }
