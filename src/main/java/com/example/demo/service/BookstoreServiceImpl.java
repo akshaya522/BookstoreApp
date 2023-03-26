@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 @Service
 public class BookstoreServiceImpl implements BookstoreService {
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     @Autowired
     BookRepository bookRepository;
 
@@ -27,6 +29,11 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     @Autowired
     BookAuthorRepository bookAuthorRepository;
+
+    @Override
+    public void saveBooks(List<BookDto> books) {
+        books.forEach(book -> saveBook(book));
+    };
 
     @Override
     public String saveBook(BookDto bookDto) {
@@ -39,28 +46,26 @@ public class BookstoreServiceImpl implements BookstoreService {
         newBook = this.bookRepository.save(newBook);
 
         List<Author> authorList = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        bookDto.getAuthors()
-                .forEach(author -> {
-                    Author auth = new Author();
-                    auth.setFullName(author.getName());
-                    auth.setBirthday(LocalDate.parse(author.getBirthday(), formatter));
-                    authorList.add(auth);
-                });
-
+        bookDto
+            .getAuthors()
+            .forEach(author -> {
+                Author auth = new Author();
+                auth.setFullName(author.getName());
+                auth.setBirthday(LocalDate.parse(author.getBirthday(), formatter));
+                authorList.add(auth);
+            });
         List<Author> authors = this.authorRepository.saveAll(authorList);
 
         String bookId = newBook.getIsbn();
         List<BookAuthor> bookAuthorList = new ArrayList<>();
         authors
-                .stream()
-                .forEach(i -> {
-                    BookAuthor bkAuthor = new BookAuthor();
-                    bkAuthor.setAuthorId(i.getId());
-                    bkAuthor.setBookId(bookId);
-                    bookAuthorList.add(bkAuthor);
-                });
+            .stream()
+            .forEach(i -> {
+                BookAuthor bkAuthor = new BookAuthor();
+                bkAuthor.setAuthorId(i.getId());
+                bkAuthor.setBookId(bookId);
+                bookAuthorList.add(bkAuthor);
+            });
         this.bookAuthorRepository.saveAll(bookAuthorList);
 
         return newBook.getIsbn();
@@ -73,16 +78,56 @@ public class BookstoreServiceImpl implements BookstoreService {
     }
 
     @Override
+    public List<BookAuthor> getBookAuthors(String isbn) {
+        return this.bookAuthorRepository.findByBookId(isbn);
+    }
+
+    @Override
     public Book updateBook(BookDto bookDto) {
         Book bk = this.bookRepository.findByIsbn(bookDto.getIsbn()).orElse(null);
 
         if (bk != null) {
+            String bkIsbn = bookDto.getIsbn();
+            List<BookAuthor> bkAuthors = this.bookAuthorRepository.findByBookId(bkIsbn);
+
             bk.setYearOfPublish(bookDto.getYearOfPublish());
             bk.setBookGenre(bookDto.getBookGenre());
             bk.setBookPrice(bookDto.getBookPrice());
             bk.setBookTitle(bookDto.getBookTitle());
-
             bk = this.bookRepository.save(bk);
+
+            List<BookAuthor> bookAuthorList = new ArrayList<>();
+            List<Long> authorIds = new ArrayList<>();
+
+            bookDto
+                .getAuthors()
+                .forEach(author -> {
+                    BookAuthor bkAuthor = bkAuthors.stream().filter(i -> i.getAuthorId().equals(author.getId())).findAny().orElse(null);
+                    if (author.getId() != null && bkAuthor != null) {
+                        authorIds.add(author.getId());
+                    } else if (author.getId() != null && bkAuthor == null) {
+                        BookAuthor newBkAuthor = new BookAuthor();
+                        newBkAuthor.setAuthorId(author.getId());
+                        newBkAuthor.setBookId(bkIsbn);
+                        authorIds.add(author.getId());
+                        bookAuthorList.add(newBkAuthor);
+                    } else if (author.getId() == null) {
+                        Author auth = new Author();
+                        auth.setFullName(author.getName());
+                        auth.setBirthday(LocalDate.parse(author.getBirthday(), formatter));
+                        auth = this.authorRepository.save(auth);
+
+                        BookAuthor newBkAuthor = new BookAuthor();
+                        newBkAuthor.setAuthorId(auth.getId());
+                        newBkAuthor.setBookId(bkIsbn);
+                        bookAuthorList.add(newBkAuthor);
+                    }
+                });
+
+            List<BookAuthor> deletedAuth = bkAuthors.stream().filter(i -> !authorIds.contains(i.getAuthorId())).collect(Collectors.toList());
+            this.bookAuthorRepository.deleteAll(deletedAuth);
+            this.bookAuthorRepository.saveAll(bookAuthorList);
+
             return bk;
         } else {
             throw new BadRequestAlertException("Invalid isbn value!");
@@ -91,12 +136,12 @@ public class BookstoreServiceImpl implements BookstoreService {
 
     @Override
     public String deleteBook(String isbn) {
-        Book bk = new Book();
+        Book bk = this.bookRepository.findByIsbn(isbn).orElse(null);
         if (bk != null) {
             this.bookRepository.delete(bk);
             return "Book deleted successfully!";
         } else {
-            return "Book with this isbn does not exist!";
+            throw new BadRequestAlertException("Isbn does not exist!");
         }
     }
 

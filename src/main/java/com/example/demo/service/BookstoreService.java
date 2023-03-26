@@ -1,13 +1,16 @@
 package com.example.demo.service;
 
 import com.example.demo.domain.Book;
+import com.example.demo.domain.BookAuthor;
 import com.example.demo.domain.BookDto;
 
 import javax.management.BadAttributeValueExpException;
 import java.util.List;
 
 public interface BookstoreService {
-    public String saveBook(BookDto book);
+    String saveBook(BookDto book);
+
+    void saveBooks(List<BookDto> books);
 
     Book updateBook(BookDto bookDto) throws BadAttributeValueExpException;
 
@@ -16,4 +19,6 @@ public interface BookstoreService {
     Book getBook(String id);
 
     List<Book> searchForBook(String title, String author);
+
+    List<BookAuthor> getBookAuthors(String isbn);
 }

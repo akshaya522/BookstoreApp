@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.BadRequestAlertException;
 import com.example.demo.domain.Book;
+import com.example.demo.domain.BookAuthor;
 import com.example.demo.domain.BookDto;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.service.BookstoreService;
@@ -28,9 +29,19 @@ public class BookstoreController {
         this.bookstoreService = bookstoreService;
     }
 
+    @PostMapping("/")
+    public String test(){
+        return "Bookstore Application";
+    }
+
     @PostMapping("/saveBook")
     public String saveBook(@RequestBody BookDto book){
         return this.bookstoreService.saveBook(book);
+    }
+
+    @PostMapping("/saveBooks")
+    public void saveBooks(@RequestBody List<BookDto> books){
+        this.bookstoreService.saveBooks(books);
     }
 
     @PutMapping("/updateBook")
@@ -41,6 +52,11 @@ public class BookstoreController {
     @GetMapping("/getBook/{id}")
     public Book getBook(@PathVariable String id) throws BadRequestAlertException {
         return this.bookstoreService.getBook(id);
+    }
+
+    @GetMapping("/getBookAuthors/{id}")
+    public List<BookAuthor> getBookAuthors(@PathVariable String id) throws BadRequestAlertException {
+        return this.bookstoreService.getBookAuthors(id);
     }
 
     @DeleteMapping("/deleteBook")
