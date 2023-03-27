@@ -1,7 +1,5 @@
 package com.example.demo.domain;
 
-import java.time.LocalDate;
-
 public class AuthorDto {
 
     private Long id;

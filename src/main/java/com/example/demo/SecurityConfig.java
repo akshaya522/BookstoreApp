@@ -19,7 +19,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class SecurityConfig {
 
     private static final RequestMatcher PROTECTED_URLS = new OrRequestMatcher(
-            new AntPathRequestMatcher("/test/**")
+            new AntPathRequestMatcher("/manage/**")
     );
 
     private static final RequestMatcher UNPROTECTED_URLS = new OrRequestMatcher(

@@ -8,17 +8,11 @@ import javax.management.BadAttributeValueExpException;
 import java.util.List;
 
 public interface BookstoreService {
-    String saveBook(BookDto book);
-
-    void saveBooks(List<BookDto> books);
-
-    Book updateBook(BookDto bookDto) throws BadAttributeValueExpException;
-
+    BookDto saveBook(BookDto book);
+    BookDto updateBook(BookDto bookDto);
     String deleteBook(String isbn);
-
+    List<BookDto> searchForBook(String title, String author);
+    void saveBooks(List<BookDto> books);
     Book getBook(String id);
-
-    List<Book> searchForBook(String title, String author);
-
     List<BookAuthor> getBookAuthors(String isbn);
 }

@@ -1,15 +1,11 @@
 package com.example.demo.controller;
 
-import com.example.demo.BadRequestAlertException;
+import com.example.demo.errors.BadRequestAlertException;
 import com.example.demo.domain.Book;
 import com.example.demo.domain.BookAuthor;
 import com.example.demo.domain.BookDto;
-import com.example.demo.repository.BookRepository;
 import com.example.demo.service.BookstoreService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.BadAttributeValueExpException;
@@ -18,43 +14,47 @@ import java.util.List;
 @RestController
 @RequestMapping("/books")
 public class BookstoreController {
-    private final Logger log = LoggerFactory.getLogger(BookstoreController.class);
-
     private final BookstoreService bookstoreService;
 
     public BookstoreController(
-            BookstoreService bookstoreService
+        BookstoreService bookstoreService
     ){
         this.bookstoreService = bookstoreService;
     }
 
+    @ApiOperation("Save a book")
     @PostMapping("/saveBook")
-    public String saveBook(@RequestBody BookDto book){
+    public BookDto saveBook(@RequestBody BookDto book){
         return this.bookstoreService.saveBook(book);
     }
 
+    @ApiOperation("Save a list of books")
     @PostMapping("/saveBooks")
     public void saveBooks(@RequestBody List<BookDto> books){
         this.bookstoreService.saveBooks(books);
     }
 
+    @ApiOperation("Update details of existing book")
     @PutMapping("/updateBook")
-    public Book updateBook(@RequestBody BookDto book) throws BadAttributeValueExpException {
+    public BookDto updateBook(@RequestBody BookDto book) throws BadAttributeValueExpException {
         return this.bookstoreService.updateBook(book);
     }
 
+    @ApiOperation("Retrieve existing book details")
     @GetMapping("/getBook/{id}")
     public Book getBook(@PathVariable String id) throws BadRequestAlertException {
         return this.bookstoreService.getBook(id);
     }
 
+    @ApiOperation("Retrieve existing book and author details")
     @GetMapping("/getBookAuthors/{id}")
     public List<BookAuthor> getBookAuthors(@PathVariable String id) throws BadRequestAlertException {
         return this.bookstoreService.getBookAuthors(id);
     }
 
+    @ApiOperation("Search for books by exact title and/or author exact full name")
     @GetMapping("/searchBook")
-    public List<Book> searchBooks(@RequestParam(required = false) String title, @RequestParam(required = false) String authorName) {
+    public List<BookDto> searchBooks(@RequestParam(required = false) String title, @RequestParam(required = false) String authorName) {
         return this.bookstoreService.searchForBook(title, authorName);
     }
 }
