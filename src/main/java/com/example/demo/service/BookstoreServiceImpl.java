@@ -36,7 +36,7 @@ public class BookstoreServiceImpl implements BookstoreService {
      * */
     @Override
     public BookDto saveBook(BookDto bookDto) {
-        this.bookstoreValidatorService.validateBook(bookDto);
+        this.bookstoreValidatorService.validateBook(bookDto, true);
 
         /** Save book */
         Book newBook = new Book();
@@ -86,7 +86,7 @@ public class BookstoreServiceImpl implements BookstoreService {
      * */
     @Override
     public BookDto updateBook(BookDto bookDto) {
-        this.bookstoreValidatorService.validateBook(bookDto);
+        this.bookstoreValidatorService.validateBook(bookDto, false);
         Book book = this.bookRepository.findByIsbn(bookDto.getIsbn()).orElse(null);
 
         /** Check if book exists */
@@ -154,7 +154,9 @@ public class BookstoreServiceImpl implements BookstoreService {
 
         /** Check if book exists */
         if (book != null) {
+            List<BookAuthor> bkAuths = this.bookAuthorRepository.findByBookId(book.getIsbn());
             this.bookRepository.delete(book);
+            this.bookAuthorRepository.deleteAll(bkAuths);
             return "Book deleted successfully!";
         } else {
             throw new BadRequestAlertException("Book with isbn does not exist!");
@@ -191,25 +193,23 @@ public class BookstoreServiceImpl implements BookstoreService {
                 });
 
 
-            books.addAll(this.booksToDtosWithAuthorDtos(bk.stream().filter(i -> valid.contains(i.getIsbn())).collect(Collectors.toList()), bkAthList, authors));
+            books.addAll(this.booksToDtosWithAuthorDtos(bk.stream().filter(i -> valid.contains(i.getIsbn())).collect(Collectors.toList()), bkAthList, false));
         /** Only book title */
         } else if (StringUtils.trimToNull(title) != null) {
             List<Book> bk = this.bookRepository.findByBookTitle(title.trim());
             List<BookAuthor> bkAuthors = this.bookAuthorRepository.findByBookIdIn(bk.stream().map(Book::getIsbn).collect(Collectors.toList()));
-            List<Author> authors = this.authorRepository.findByIdIn(bkAuthors.stream().map(BookAuthor::getAuthorId).collect(Collectors.toList()));
             if (bk != null && bk.size() > 0){
-                books.addAll(this.booksToDtosWithAuthorDtos(bk, bkAuthors, authors));
+                books.addAll(this.booksToDtosWithAuthorDtos(bk, bkAuthors, false));
             }
         /** Only Author name */
         } else if (StringUtils.trimToNull(authorName) != null) {
             /** Find authors with matching name */
-            List<Author> authors = this.authorRepository.findByFullName(authorName);
-            List<Long> athList = authors.stream().map(Author::getId).collect(Collectors.toList());
+            List<Long> athList = this.authorRepository.findByFullName(authorName).stream().map(Author::getId).collect(Collectors.toList());
             /** Find bookAuthors for found authors */
             List<BookAuthor> bkAthList = this.bookAuthorRepository.findByAuthorIdIn(athList);
             /** Find books */
             List<Book> bkList = this.bookRepository.findByIsbnIn(bkAthList.stream().map(BookAuthor::getBookId).collect(Collectors.toList()));
-            books.addAll(this.booksToDtosWithAuthorDtos(bkList, bkAthList, authors));
+            books.addAll(this.booksToDtosWithAuthorDtos(bkList, bkAthList, true));
         } else {
             throw new BadRequestAlertException("No book title or author name entered!");
         }
@@ -263,8 +263,12 @@ public class BookstoreServiceImpl implements BookstoreService {
         return bookDtos;
     }
 
-    private List<BookDto> booksToDtosWithAuthorDtos(List<Book> books, List<BookAuthor> bookAuthorList, List<Author> authors) {
+    private List<BookDto> booksToDtosWithAuthorDtos(List<Book> books, List<BookAuthor> bookAuthorLst, Boolean onlyAuthor) {
+        List<BookAuthor> bookAuthorList = onlyAuthor ?
+                this.bookAuthorRepository.findByBookIdIn(books.stream().map(Book::getIsbn).collect(Collectors.toList())) :  bookAuthorLst;
+
         List<BookDto> bookDtos = this.booksToDtos(books);
+        List<Author> authors = this.authorRepository.findByIdIn(bookAuthorList.stream().map(BookAuthor::getAuthorId).collect(Collectors.toList()));
         bookDtos
             .forEach(bk -> {
                 List<Long> athIds = bookAuthorList.stream().filter(i -> i.getBookId().equals(bk.getIsbn())).map(BookAuthor::getAuthorId).collect(Collectors.toList());

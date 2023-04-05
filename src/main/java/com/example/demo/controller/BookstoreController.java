@@ -15,7 +15,6 @@ import java.util.List;
 @RequestMapping("/books")
 public class BookstoreController {
     private final BookstoreService bookstoreService;
-
     public BookstoreController(
         BookstoreService bookstoreService
     ){

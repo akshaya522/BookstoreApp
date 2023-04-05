@@ -20,10 +20,10 @@ public class BookstoreValidatorService {
     @Autowired
     BookRepository bookRepository;
 
-    public void validateBook(BookDto bookDto) {
+    public void validateBook(BookDto bookDto, boolean createBk) {
         Book bk = this.bookRepository.findByIsbn(bookDto.getIsbn()).orElse(null);
 
-        if (bk != null) {
+        if (bk != null && createBk) {
             throw new BadRequestAlertException("Book with isbn already exists!");
         }
         if (StringUtils.trimToNull(bookDto.getBookTitle()) == null) {
